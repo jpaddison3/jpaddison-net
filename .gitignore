@@ -3,3 +3,7 @@ ziwo/target
 
 # editor
 .vscode
+
+# dev state
+.env
+ziwo/*.db
