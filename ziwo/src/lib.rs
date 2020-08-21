@@ -1,6 +1,6 @@
+use anyhow::{self, Result};
 use std::env;
 use thiserror::Error;
-use anyhow::{self, Result};
 
 pub struct EnvConfig {
     pub instance_env: InstanceEnv,
@@ -9,21 +9,21 @@ pub struct EnvConfig {
 
 #[derive(Error, Debug)]
 pub enum ConfigError {
-    #[error("unrecognized instance environment error")]
-    UnrecognizedIntanceEnv,
+    #[error("unrecognized instance environment '{0}'")]
+    UnrecognizedIntanceEnv(String),
 }
 
 impl EnvConfig {
     pub fn new() -> Result<EnvConfig> {
         dotenv::dotenv()?;
 
-        let instance_env =         match &env::var("ENV")?[..] {
-                "Production" => InstanceEnv::Production,
-                "Staging" => InstanceEnv::Staging,
-                "Test" => InstanceEnv::Test,
-                "Dev" => InstanceEnv::Dev,
-                _ => anyhow::bail!(ConfigError::UnrecognizedIntanceEnv),
-            };
+        let instance_env = match &env::var("ENV")?[..] {
+            "production" => InstanceEnv::Production,
+            "staging" => InstanceEnv::Staging,
+            "test" => InstanceEnv::Test,
+            "dev" => InstanceEnv::Dev,
+            s => anyhow::bail!(ConfigError::UnrecognizedIntanceEnv(String::from(s))),
+        };
         let database_url = env::var("DATABASE_URL")?;
 
         Ok(EnvConfig {
@@ -32,13 +32,13 @@ impl EnvConfig {
         })
     }
 
-    // pub fn is_prod(&self) -> bool {
-    //     if self.instance_env == InstanceEnv::Production {
-    //         true
-    //     } else {
-    //         false
-    //     }
-    // }
+    pub fn is_prod(&self) -> bool {
+        if let InstanceEnv::Production = self.instance_env {
+            true
+        } else {
+            false
+        }
+    }
 }
 
 pub enum InstanceEnv {
