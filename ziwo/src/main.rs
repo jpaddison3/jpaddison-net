@@ -1,10 +1,8 @@
 use diesel::prelude::*;
-use ziwo::models::*;
-use ziwo::schema::guest_entries::dsl::*;
 
 use diesel::SqliteConnection;
 use std::process;
-use ziwo::EnvConfig;
+use ziwo::{self, EnvConfig};
 
 fn main() {
     let env_conf = match EnvConfig::new() {
@@ -20,13 +18,14 @@ fn main() {
     let conn =
         SqliteConnection::establish(&env_conf.database_url).expect("Could not connect to database");
 
-    let guest_book = guest_entries
-        .filter(public.eq(1))
-        .limit(5)
-        .load::<GuestEntry>(&conn)
-        .expect("Error loading guest entries");
-
-    for guest_name in guest_book {
-        println!("{:#?}", guest_name);
+    ziwo::get_and_print_guest_book(&conn);
+    if let Err(err) = ziwo::create_signature(
+        &conn,
+        "Peperomia Argyreia",
+        true,
+        &chrono::NaiveDateTime::parse_from_str("2020-08-22T10-00-00", "%Y-%m-%dT%H-%M-%S").unwrap(),
+    ) {
+        panic!("{}", err)
     }
+    ziwo::get_and_print_guest_book(&conn);
 }

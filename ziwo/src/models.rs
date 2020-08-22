@@ -1,3 +1,4 @@
+use super::schema::guest_entries;
 use chrono::NaiveDateTime;
 #[derive(Debug, Queryable)]
 pub struct GuestEntry {
@@ -5,4 +6,12 @@ pub struct GuestEntry {
     pub name: String,
     pub public: i32,
     pub created_at: NaiveDateTime,
+}
+
+#[derive(Insertable)]
+#[table_name = "guest_entries"]
+pub struct NewGuestEntry<'a> {
+    pub name: &'a str,
+    pub public: i32,
+    pub created_at: &'a NaiveDateTime,
 }
