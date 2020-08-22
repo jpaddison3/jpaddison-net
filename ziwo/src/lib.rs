@@ -1,6 +1,12 @@
+#[macro_use]
+extern crate diesel;
+
 use anyhow::{self, Result};
 use std::env;
 use thiserror::Error;
+
+pub mod models;
+pub mod schema;
 
 pub struct EnvConfig {
     pub instance_env: InstanceEnv,

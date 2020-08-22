@@ -1,7 +1,8 @@
 table! {
-    guest_book (id) {
-        id -> Nullable<Integer>,
+    guest_entries (id) {
+        id -> Integer,
         name -> Text,
-        created_at -> Nullable<Integer>,
+        public -> Integer,
+        created_at -> Timestamp,
     }
 }

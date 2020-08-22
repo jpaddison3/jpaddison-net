@@ -1,6 +1,7 @@
 -- Your SQL goes here
-CREATE TABLE guest_book (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE guest_entries (
+    id INTEGER NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
-    created_at INTEGER
+    public INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL
 );
