@@ -13,6 +13,7 @@ pub mod schema;
 use self::models::*;
 use self::schema::guest_entries::dsl::*;
 
+#[derive(Debug, Clone)]
 pub struct EnvConfig {
     pub instance_env: InstanceEnv,
     pub database_url: String,
@@ -52,6 +53,7 @@ impl EnvConfig {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
 pub enum InstanceEnv {
     Production,
     Staging,

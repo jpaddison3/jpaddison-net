@@ -1,31 +1,27 @@
-use diesel::prelude::*;
-
-use diesel::SqliteConnection;
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use std::process;
-use ziwo::{self, EnvConfig};
+use ziwo::{self, EnvConfig, InstanceEnv};
 
-fn main() {
+#[get("/")]
+async fn index(data: web::Data<EnvConfig>) -> impl Responder {
+    if let InstanceEnv::Production = &data.instance_env {
+        HttpResponse::Ok().body("Hello this site is professional")
+    } else {
+        HttpResponse::Ok().body("Hello programmer")
+    }
+}
+
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
     let env_conf = match EnvConfig::new() {
         Ok(ec) => ec,
         Err(err) => {
-            eprintln!("Could not load config got, {}", err);
+            eprintln!("Failed to load environment configuration, got: {}", err);
             process::exit(1);
         }
     };
-    if env_conf.is_prod() {
-        panic!("TODO: Production support");
-    }
-    let conn =
-        SqliteConnection::establish(&env_conf.database_url).expect("Could not connect to database");
-
-    ziwo::get_and_print_guest_book(&conn);
-    if let Err(err) = ziwo::create_signature(
-        &conn,
-        "Peperomia Argyreia",
-        true,
-        &chrono::NaiveDateTime::parse_from_str("2020-08-22T10-00-00", "%Y-%m-%dT%H-%M-%S").unwrap(),
-    ) {
-        panic!("{}", err)
-    }
-    ziwo::get_and_print_guest_book(&conn);
+    HttpServer::new(move || App::new().service(index).data(env_conf.clone()))
+        .bind("127.0.0.1:8088")?
+        .run()
+        .await
 }
