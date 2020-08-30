@@ -1,4 +1,5 @@
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
+use listenfd::ListenFd;
 use std::process;
 use ziwo::{self, EnvConfig, InstanceEnv};
 
@@ -20,8 +21,15 @@ async fn main() -> std::io::Result<()> {
             process::exit(1);
         }
     };
-    HttpServer::new(move || App::new().service(index).data(env_conf.clone()))
-        .bind("127.0.0.1:8088")?
-        .run()
-        .await
+    let mut listenfd = ListenFd::from_env();
+
+    let mut server = HttpServer::new(move || App::new().service(index).data(env_conf.clone()));
+
+    server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
+        server.listen(l)?
+    } else {
+        server.bind("127.0.0.1:8088")?
+    };
+
+    server.run().await
 }
