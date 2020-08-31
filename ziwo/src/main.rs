@@ -1,9 +1,7 @@
-// use actix::prelude::*;
 use actix::SyncArbiter;
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
-// use diesel::prelude::*;
 use diesel::{Connection, SqliteConnection};
-// use listenfd::ListenFd;
+use listenfd::ListenFd;
 use std::process;
 use ziwo::{self, AppState, DbExecutor, EnvConfig, InstanceEnv};
 
@@ -29,7 +27,7 @@ async fn main() -> std::io::Result<()> {
         panic!("TODO: Production support");
     }
 
-    let sys = actix::System::new("ziwo");
+    // Start sync actors db connections
     let database_url = env_conf.database_url.clone();
     let db_addr = SyncArbiter::start(3, move || {
         let conn = SqliteConnection::establish(&database_url)
@@ -38,38 +36,25 @@ async fn main() -> std::io::Result<()> {
     });
 
     // For autoreload
-    // let mut listenfd = ListenFd::from_env();
+    let mut listenfd = ListenFd::from_env();
 
-    // let mut server = HttpServer::new(move || {
-    //     App::new().service(index).data(AppState {
-    //         env_conf: env_conf.clone(),
-    //         db_addr,
-    //     })
-    // })
-    // .bind("127.0.0.1:8088")?;
-    // server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
-    //     // I believe this is saying: if we've been here before, we can reuse the listener
-    //     server.listen(l)?
-    // } else {
-    //     // I believe this is saying: first time => bind
-    //     // TODO: configurable
-    //     server.bind("127.0.0.1:8088")?
-    // };
-    // server.start()?;
-    HttpServer::new(move || {
-        App::new()
-            .data(AppState {
-                db_addr: db_addr.clone(),
-                env_conf: env_conf.clone(),
-            })
-            .service(index)
-    })
-    .bind("127.0.0.1:8080")
-    .unwrap();
+    let mut server = HttpServer::new(move || {
+        App::new().service(index).data(AppState {
+            env_conf: env_conf.clone(),
+            db_addr: db_addr.clone(),
+        })
+    });
+    server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
+        // I believe this is saying: if we've been here before, we can reuse the listener
+        server.listen(l)?
+    } else {
+        // I believe this is saying: first time => bind
+        // TODO: configurable
+        server.bind("127.0.0.1:8088")?
+    };
 
-    println!("Started http server:");
-
-    sys.run()?;
+    println!("Starting http server:");
+    server.run().await?;
 
     Ok(())
 }

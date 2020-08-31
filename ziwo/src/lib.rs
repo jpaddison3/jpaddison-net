@@ -26,7 +26,9 @@ pub enum ConfigError {
     UnrecognizedIntanceEnv(String),
 }
 
+// Configuration from environment variables
 impl EnvConfig {
+    // Get environment variables, with help from dotenv
     pub fn new() -> Result<EnvConfig> {
         dotenv::dotenv()?;
 
@@ -62,6 +64,7 @@ pub enum InstanceEnv {
     Dev,
 }
 
+// Add signature to db
 pub fn create_signature<'a>(
     conn: &SqliteConnection,
     name_: &'a str,
