@@ -1,3 +1,4 @@
+//! TODO Doc
 #[macro_use]
 extern crate diesel;
 
@@ -64,7 +65,7 @@ pub enum InstanceEnv {
     Dev,
 }
 
-// Add signature to db
+/// Add signature to db
 pub fn create_signature<'a>(
     conn: &SqliteConnection,
     name_: &'a str,
@@ -106,6 +107,9 @@ pub fn get_and_print_guest_book(conn: &SqliteConnection) {
     }
 }
 
+/// Struct that handles async communication with the DB
+///
+/// Meant to be run on synchronous threads
 pub struct DbExecutor(pub SqliteConnection);
 
 impl Actor for DbExecutor {
@@ -138,15 +142,18 @@ impl Handler<SignGuestBook> for DbExecutor {
     }
 }
 
-struct SignGuestBook {
-    name: String,
-    public: bool,
+/// Message that can be sent to DbExecutor to create a new guest_entry
+pub struct SignGuestBook {
+    pub name: String,
+    pub public: bool,
 }
 
 impl Message for SignGuestBook {
     type Result = QueryResult<GuestEntry>;
 }
 
+/// All application state lives here. It get's passed to App.data in the App
+/// factory, and gets passed as the first argument to all services
 pub struct AppState {
     pub env_conf: EnvConfig,
     pub db_addr: Addr<DbExecutor>,

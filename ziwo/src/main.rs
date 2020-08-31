@@ -3,15 +3,30 @@ use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use diesel::{Connection, SqliteConnection};
 use listenfd::ListenFd;
 use std::process;
-use ziwo::{self, AppState, DbExecutor, EnvConfig, InstanceEnv};
+use ziwo::{self, AppState, DbExecutor, EnvConfig, SignGuestBook};
 
 #[get("/")]
 async fn index(data: web::Data<AppState>) -> impl Responder {
-    if let InstanceEnv::Production = &data.env_conf.instance_env {
-        HttpResponse::Ok().body("Hello this site is professional")
-    } else {
-        HttpResponse::Ok().body("Hello programmer")
-    }
+    let guest_entry_fut = data.db_addr.send(SignGuestBook {
+        name: String::from("Philodendron Hederaceum"),
+        public: true,
+    });
+    let guest_entry_res_1 = guest_entry_fut.await;
+    let guest_entry_res_2 = match guest_entry_res_1 {
+        Ok(ger) => ger,
+        Err(err) => {
+            // TODO;
+            panic!("{}", err)
+        }
+    };
+    let guest_entry = match guest_entry_res_2 {
+        Ok(ge) => ge,
+        Err(err) => {
+            // TODO;
+            panic!("{}", err)
+        }
+    };
+    HttpResponse::Ok().body(format!("Hello programmer, {}", guest_entry.name))
 }
 
 #[actix_rt::main]
