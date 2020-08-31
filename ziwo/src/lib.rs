@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate diesel;
 
+use actix::prelude::*;
 use anyhow::{self, Result};
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
@@ -100,4 +101,50 @@ pub fn get_and_print_guest_book(conn: &SqliteConnection) {
     for guest_name in guest_book {
         println!(" * {}", guest_name.name);
     }
+}
+
+pub struct DbExecutor(pub SqliteConnection);
+
+impl Actor for DbExecutor {
+    type Context = SyncContext<Self>;
+}
+
+impl Handler<SignGuestBook> for DbExecutor {
+    type Result = QueryResult<GuestEntry>;
+
+    fn handle(&mut self, msg: SignGuestBook, _: &mut Self::Context) -> Self::Result {
+        // Create insertion model
+        let new_entry = models::NewGuestEntry {
+            name: &msg.name,
+            public: if msg.public { 1 } else { 0 },
+            created_at: &chrono::offset::Utc::now().naive_utc(),
+        };
+
+        // normal diesel operations
+        // TODO; use my function
+        diesel::insert_into(guest_entries)
+            .values(&new_entry)
+            .execute(&self.0)?;
+
+        // TODO; deal with multiple names
+        let mut items = guest_entries
+            .filter(name.eq(&msg.name))
+            .load::<models::GuestEntry>(&self.0)?;
+
+        Ok(items.pop().unwrap())
+    }
+}
+
+struct SignGuestBook {
+    name: String,
+    public: bool,
+}
+
+impl Message for SignGuestBook {
+    type Result = QueryResult<GuestEntry>;
+}
+
+pub struct AppState {
+    pub env_conf: EnvConfig,
+    pub db_addr: Addr<DbExecutor>,
 }
