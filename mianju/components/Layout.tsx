@@ -4,11 +4,7 @@ import Typography from '@material-ui/core/Typography'
 import Nav from 'components/Nav'
 import routes from 'lib/routes'
 
-type LayoutProps = {
-  pageTitle: string | React.ElementType
-}
-
-export const Layout: React.FC<LayoutProps> = ({ children, pageTitle }) => {
+export const Layout: React.FC = ({ children }) => {
   return <>
     <Head>
       <title>JP Addison's personal site</title>
@@ -19,7 +15,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, pageTitle }) => {
     </Head>
     <Container fixed>
       <Nav routes={routes} />
-      <Typography variant='h2' component='h1' color='primary'>{pageTitle}</Typography>
       {children}
     </Container>
   </>

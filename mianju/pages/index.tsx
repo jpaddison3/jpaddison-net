@@ -1,9 +1,33 @@
 import Typography from '@material-ui/core/Typography'
+import Grid from '@material-ui/core/Grid'
 import Layout from "components/Layout"
+import { makeStyles } from '@material-ui/core'
+
+const useStyles = makeStyles(theme => ({
+  profileImage: {
+    borderRadius: "50%"
+  }
+}))
 
 export default function Home() {
-  return <Layout pageTitle='Hello'>
-    <Typography gutterBottom>Pork belly sustainable kitsch wayfarers Portland organic blog kickstarter Wes Anderson authentic bitters flexitarian direct trade foodie dreamcatcher shoreditch. Gluten-free Odd Future fanny pack organic raw denim try-hard Austin stumptown ennui umami tote bag taxidermy seitan master locavore hashtag quinoa butcher banjo. Keytar retro pork belly skateboard deep v tumblr wayfarers butcher San Francisco literally lol photo booth hoodie Echo Park heirloom vinegar bespoke. Distillery stumptown skateboard lo-fi flannel photo booth Portland wire-rimmed glasses chic gluten-free farm-to-table marfa bahn mi cronut lol blog you probably haven't heard of them shorts. Irony normcore heirloom lomo kitsch sustainable salvia wire-rimmed glasses Helvetica pickled bicycle bicycle gentrify before they sold out food truck tilde. Toms normcore cold-pressed farm-to-table tumblr gastropub artisan yolo put a bird on it vinegar craft beer craft beer blog xoxo disrupt chillwave migas meh post-ironic. Beard blog HEALTH next level try-hard locavore brunch retro undefined kale chips meh DIY 8-bit sustainable yolo aesthetic ethical selvage. Locavore roof party freegan schlitz retro tousled undefined tumblr keffiyeh tattooed organic forage chia seitan tattoo bitters. Semiotics freegan vinyl disrupt blog godard williamsburg pop-up gentrify raw denim denim marfa trust fund neutra deep v specs american apparel pork belly you probably haven't heard of them.</Typography>
-    <Typography gutterBottom>Fashion fixie quinoa street art specs ennui dreamcatcher leggings shorts kickstarter raw denim actually Helvetica authentic indie iphone mlkshk seitan. Twee narwhal twee PBR&B Austin meggings pickled bitters hashtag bicycle bespoke brunch aesthetic kitsch neutra. Fixie wayfarers irony trust fund roof party cray irony Echo Park polaroid street art skateboard semiotics undefined 8-bit Etsy meggings shorts. Shoreditch lomo heirloom butcher Vice artisan chillwave VHS organic Blue Bottle hoodie Wes Anderson cold-pressed beard Portland Echo Park.</Typography>
+  const classes = useStyles()
+
+  return <Layout>
+    <Grid container justify="space-between" alignItems="center">
+      <Grid item md={6}>
+        <Typography variant='h2' component='h1' color='primary'>JP Addison</Typography>
+
+        <Typography gutterBottom>is a developer and <a href="https://www.effectivealtruism.org/articles/introduction-to-effective-altruism/">effective altruist</a>.</Typography>
+
+        <Typography gutterBottom>I am the lead developer for the <a href="https://forum.effectivealtruism.org/">Effective Altruism Forum</a>. I contribute code to <a href="https://www.lesswrong.com/">LessWrong</a>, who's codebase I forked to make the Forum.</Typography>
+
+        <Typography gutterBottom>You can find me elsewhere at <a href="https://github.com/jpaddison3">github</a> or <a href="https://www.linkedin.com/in/jpaddison3/">linkedin</a>.</Typography>
+
+        <Typography gutterBottom>You can get in touch with me socially via <a href="https://www.facebook.com/jpaddison1.6">facebook</a> or <a href="mailto:johnpaddison@gmail.com">email</a>, or professionally via my <a href="mailto:jp@centreforeffectivealtruism.org">work email</a>.</Typography>
+      </Grid>
+      <Grid item md={5}>
+        <img src="/jp-profile.jpg" alt="profile image" className={classes.profileImage}/>
+      </Grid>
+    </Grid>
   </Layout>
 }
