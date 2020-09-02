@@ -12,9 +12,8 @@ const useStyles = makeStyles(theme => ({
 export default function Home() {
   const classes = useStyles()
 
-  // TODO; mobile view
   return <Layout>
-    <Grid container justify="space-between" alignItems="center">
+    <Grid container justify="space-between" alignItems="center" spacing={3}>
       <Grid item md={6}>
         <Typography variant='h2' component='h1' color='primary'>JP Addison</Typography>
 

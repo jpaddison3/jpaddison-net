@@ -29,20 +29,17 @@ interface NavDrawerProps extends SwipeableDrawerProps {
   routes: NavRoutes
 }
 
-// TODO: How to apply classname to underlying element of MUI item?
 const NavDrawer = ({ routes, open, onClose, onOpen }: NavDrawerProps) => {
   const classes = useStyles()
 
   return <SwipeableDrawer open={open} onClose={onClose} onOpen={onOpen}>
-    <div className={classes.drawerRoot}>
-      <List>
-        {routes.map(({ id, href, label }) => <ListItem button key={id}>
-          <ListItemText primaryTypographyProps={{variant: 'body2'}}>
-            <WrappedLink href={href}><span className={classes.navItem}>{label}</span></WrappedLink>
-          </ListItemText>
-        </ListItem>)}
-      </List>
-    </div>
+    <List className={classes.drawerRoot}>
+      {routes.map(({ id, href, label }) => <ListItem button key={id}>
+        <ListItemText primaryTypographyProps={{variant: 'body2'}}>
+          <WrappedLink className={classes.navItem} href={href}>{label}</WrappedLink>
+        </ListItemText>
+      </ListItem>)}
+    </List>
   </SwipeableDrawer>
 }
 
