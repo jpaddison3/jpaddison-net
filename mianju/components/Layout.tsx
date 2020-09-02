@@ -1,6 +1,20 @@
 import Head from 'next/head'
+import Container from '@material-ui/core/Container'
+import Typography from '@material-ui/core/Typography'
+import Nav from 'components/Nav'
+import routes from 'lib/routes'
+import { makeStyles } from '@material-ui/styles'
 
-export const Layout = ({ children }: { children: React.ReactNode }) => {
+const useStyles = makeStyles(theme => ({
+    navOffset: theme.mixins.toolbar
+}))
+
+type LayoutProps = {
+    pageTitle: string|React.ElementType
+}
+
+export const Layout: React.FC<LayoutProps> = ({ children, pageTitle }) => {
+    const classes = useStyles()
     return <>
         <Head>
             <title>JP Addison's personal site</title>
@@ -9,6 +23,13 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
             <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         </Head>
-        {children}
+        <Nav routes={routes} />
+        <div className={classes.navOffset} />
+        <Container fixed>
+            <Typography variant='h2' component='h1' color='primary'>{pageTitle}</Typography>
+            {children}
+        </Container>
     </>
 }
+
+export default Layout
