@@ -7,3 +7,6 @@ ziwo/target
 # dev state
 .env
 ziwo/*.db
+
+mianju/node_modules
+mianju/.next
