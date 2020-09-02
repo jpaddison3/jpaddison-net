@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
 export default function Home() {
   const classes = useStyles()
 
+  // TODO; mobile view
   return <Layout>
     <Grid container justify="space-between" alignItems="center">
       <Grid item md={6}>

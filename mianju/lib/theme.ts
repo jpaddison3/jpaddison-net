@@ -6,21 +6,21 @@ const sansSerifFontStack = 'Helvetica, "Helvetica Neue", Arial, sans-serif'
 // build headings
 const headingNames = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const
 type HeadingName = typeof headingNames[number];
-type THeadings = Partial<Record<HeadingName, { fontFamily: string, fontWeight: number }>>
-const headings = headingNames.reduce((coll: THeadings, h: HeadingName) => {
+type Headings = Partial<Record<HeadingName, { fontFamily: string, fontWeight: number }>>
+const headings = headingNames.reduce((coll: Headings, h: HeadingName) => {
   coll[h] = {
     fontFamily: sansSerifFontStack,
     fontWeight: 700
   }
   return coll
-}, {} as THeadings)
+}, {} as Headings)
 
 // build theme
 export const theme = createMuiTheme({
   typography: {
     fontFamily: serifFontStack,
     body2: {
-      fontFamily: serifFontStack
+      fontFamily: sansSerifFontStack
     },
     ...headings
   },
