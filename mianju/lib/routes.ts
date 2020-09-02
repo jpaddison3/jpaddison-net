@@ -1,15 +1,21 @@
-import {INavRoutes} from 'components/Nav'
+type Route = {
+  id: string,
+  href: string,
+  label: string,
+}
 
-export const routes: INavRoutes = [
+export type NavRoutes = Array<Route>
+
+export const routes: NavRoutes = [
   {
     id: 'home',
     href: '/',
     label: 'Home'
   },
   {
-    id: 'blog',
-    href: '/blog',
-    label: 'Blog'
+    id: 'guest-book',
+    href: '/guest-book',
+    label: 'Guest Book'
   }
 ]
 
