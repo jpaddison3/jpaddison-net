@@ -16,6 +16,7 @@ type WrappedLinkProps = {
     prefetch?: boolean,
 }
 
+// TODO; warning
 const WrappedLink = React.forwardRef(({ className, href, as, children, prefetch }: WrappedLinkProps, ref) => {
     if (!href) {
         throw new Error("Wrapped link must receive href")
