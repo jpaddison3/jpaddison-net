@@ -127,8 +127,17 @@ impl Message for GetGuestBook {
     type Result = QueryResult<Vec<GuestEntry>>;
 }
 
+#[derive(Debug, Error)]
+pub enum SignatureRejection {
+    #[error("name must not be empty")]
+    MissingName,
+}
+
 // TODO: I guess this could be a method on a enum struct that wrapped db_addr
 pub async fn sign_guest_book(db_addr: &Addr<DbExecutor>, guest_entry: SignGuestBook) -> Result<()> {
+    if guest_entry.name == "" {
+        anyhow::bail!(SignatureRejection::MissingName);
+    }
     // Double layer of Result. First "try" the MessageError Result type from the
     // send, then try the QueryResult it returns
     db_addr.send(guest_entry).await??;

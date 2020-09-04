@@ -4,10 +4,12 @@ import {
   Typography, TableContainer, Table, TableBody, TableRow, TableCell, Paper, makeStyles, FormControl,
   Input, InputLabel, Button, FormGroup, Theme
 } from '@material-ui/core'
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles<Theme>(theme => ({
   tableRoot: {
     marginTop: 30,
+    marginBottom: 50,
     width: 350,
   },
   formRoot: {
@@ -20,6 +22,9 @@ const useStyles = makeStyles<Theme>(theme => ({
   submitButton: {
     ...theme.typography.body2,
     marginTop: 16,
+  },
+  alert: {
+    marginTop: 30,
   }
 }))
 
@@ -27,17 +32,29 @@ type GuestEntry = {
   name: string
 }
 
-type GuestBookProps = {
-  guest_entries: GuestEntry[]
+type ErrorSubset = {
+  errno: any,
+  code: any,
+  message: any,
 }
 
-const GuestEntries = ({ guest_entries }: GuestBookProps) => {
+type GuestBookProps = {
+  guestEntries: GuestEntry[] | null,
+  error: ErrorSubset | null,
+}
+
+const GuestEntries = ({ guestEntries, error }: GuestBookProps) => {
   const classes = useStyles()
+
+  if (error) {
+    console.error(error)
+    return <Alert severity="error" className={classes.alert}>{error.message}</Alert>
+  }
 
   return <TableContainer component={Paper} className={classes.tableRoot}>
     <Table>
       <TableBody>
-        {guest_entries.map((guest_entry, i) => {
+        {guestEntries!.map((guest_entry, i) => {
           return <TableRow key={i}>
             <TableCell>
               {guest_entry.name}
@@ -49,7 +66,7 @@ const GuestEntries = ({ guest_entries }: GuestBookProps) => {
   </TableContainer>
 }
 
-const SignatureForm = () => {
+const SignatureForm = ({ addName }: { addName: (name: string) => void }) => {
   const classes = useStyles()
   const [name, updateName] = useState("")
 
@@ -60,6 +77,7 @@ const SignatureForm = () => {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     console.log('signing with name', name)
+    updateName("")
     // TODO;
     // 'https://api.jpaddison.net/guest-book/new'
     const result = await fetch("http://localhost:8088/guest-book/new", {
@@ -68,7 +86,7 @@ const SignatureForm = () => {
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({name: name, public: true})
+      body: JSON.stringify({ name: name, public: true })
     })
     if (!result.ok) {
       console.error("Failed to sign guest book, got error code:", result.status)
@@ -79,6 +97,7 @@ const SignatureForm = () => {
         console.error("No further error information given")
       }
     }
+    addName(name)
   }
 
   // TODO; command enter
@@ -87,7 +106,12 @@ const SignatureForm = () => {
     <FormControl classes={{ root: classes.formRoot }}>
       <FormGroup row>
         <InputLabel htmlFor="guest_entry">Your name</InputLabel>
-        <Input id="guest_entry" onChange={onChange} classes={{ root: classes.input }} />
+        <Input
+          id="guest_entry"
+          value={name}
+          onChange={onChange}
+          classes={{ root: classes.input }}
+        />
         <Button type="submit" classes={{ root: classes.submitButton }}>
           Sign
         </Button>
@@ -96,7 +120,20 @@ const SignatureForm = () => {
   </form>
 }
 
-export const GuestBook = ({ guest_entries }: GuestBookProps) => {
+export const GuestBook = ({ guestEntries, error }: GuestBookProps) => {
+  const [guestEntriesLocal, updateGuestEntriesLocal] = useState<GuestEntry[] | null>(guestEntries)
+
+  // Instead of refetching, we'll just add the name to this list manually. Eh,
+  // prolly fine: ¯\_(ツ)_/¯
+  const addName = (name: string) => {
+    // Word to the wise: If you try to mutate guestEntriesLocal here, it somehow
+    // fails to update the table.
+    // Second word to the wise, {...null} unpacks it into nothing, but [...null]
+    // is a runtime error. Good thing we have typescript to help us catch that.
+    const newGuestEntries = [{ name }, ...(guestEntriesLocal || [])]
+    updateGuestEntriesLocal(newGuestEntries)
+  }
+
   return <Layout>
     <Typography variant="h2" component="h1" color="primary" gutterBottom>Guest Book</Typography>
 
@@ -104,22 +141,25 @@ export const GuestBook = ({ guest_entries }: GuestBookProps) => {
 
     <Typography gutterBottom>This page is the result of building an experimental api server in rust. See the souce code on <a href="https://github.com/jpaddison3/jpaddison-net">github</a>.</Typography>
 
-    <SignatureForm />
+    <SignatureForm addName={addName} />
 
-    <GuestEntries guest_entries={guest_entries} />
+    <GuestEntries guestEntries={guestEntriesLocal} error={error} />
   </Layout>
 }
 
-// TODO; refetch
-// TODO; optimistic response
 export async function getServerSideProps(): Promise<{ props: GuestBookProps }> {
-  // TODO;, obviously
-  const res = await fetch("http://localhost:8088/guest-book")
-  console.log("res", res)
-  const data = await res.json()
+  let guestEntries: GuestEntry[] | null = null
+  let err: ErrorSubset | null = null
+  try {
+    // TODO;, obviously
+    const res = await fetch("http://localhost:8088/guest-book")
+    guestEntries = await res.json()
+  } catch (e) {
+    console.error(e)
+    err = { errno: e.errno, code: e.code, message: e.message }
+  }
 
-  // Pass data to the page via props
-  return { props: { guest_entries: data } }
+  return { props: { guestEntries: guestEntries, error: err } }
 }
 
 export default GuestBook
