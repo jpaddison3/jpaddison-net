@@ -4,8 +4,8 @@ extern crate diesel;
 
 use actix::prelude::*;
 use anyhow::{self, Result};
-use chrono::NaiveDateTime;
 use diesel::prelude::*;
+use serde::Deserialize;
 use std::env;
 use thiserror::Error;
 
@@ -23,7 +23,7 @@ pub struct EnvConfig {
 
 #[derive(Error, Debug)]
 pub enum ConfigError {
-    #[error("unrecognized instance environment '{0}'")]
+    #[error("unrecognized instance environment: '{0}'")]
     UnrecognizedIntanceEnv(String),
 }
 
@@ -65,48 +65,6 @@ pub enum InstanceEnv {
     Dev,
 }
 
-/// Add signature to db
-pub fn create_signature<'a>(
-    conn: &SqliteConnection,
-    name_: &'a str,
-    public_: bool,
-    created_at_: &'a NaiveDateTime,
-) -> Result<()> {
-    use schema::guest_entries;
-
-    let new_entry = NewGuestEntry {
-        name: name_,
-        public: if public_ { 1 } else { 0 },
-        created_at: created_at_,
-    };
-
-    diesel::insert_into(guest_entries::table)
-        .values(&new_entry)
-        .execute(conn)?;
-
-    Ok(())
-}
-
-pub fn get_and_print_guest_book(conn: &SqliteConnection) {
-    let guest_book = match guest_entries
-        .filter(public.eq(1))
-        .limit(5)
-        .load::<GuestEntry>(conn)
-    {
-        Ok(gb) => gb,
-        Err(err) => panic!("Error loading guest entries: {}", err),
-    };
-
-    if guest_book.is_empty() {
-        println!("Empty guestbook");
-        return;
-    }
-    println!("Guests:");
-    for guest_name in guest_book {
-        println!(" * {}", guest_name.name);
-    }
-}
-
 /// Struct that handles async communication with the DB
 ///
 /// Meant to be run on synchronous threads
@@ -117,39 +75,69 @@ impl Actor for DbExecutor {
 }
 
 impl Handler<SignGuestBook> for DbExecutor {
-    type Result = QueryResult<GuestEntry>;
+    type Result = QueryResult<()>;
 
     fn handle(&mut self, msg: SignGuestBook, _: &mut Self::Context) -> Self::Result {
-        // Create insertion model
         let new_entry = models::NewGuestEntry {
             name: &msg.name,
             public: if msg.public { 1 } else { 0 },
             created_at: &chrono::offset::Utc::now().naive_utc(),
         };
 
-        // normal diesel operations
-        // TODO; use my function
         diesel::insert_into(guest_entries)
             .values(&new_entry)
             .execute(&self.0)?;
 
-        // TODO; deal with multiple names
-        let mut items = guest_entries
-            .filter(name.eq(&msg.name))
+        Ok(())
+        // Err(DieselError::AlreadyInTransaction)
+    }
+}
+
+impl Handler<GetGuestBook> for DbExecutor {
+    type Result = QueryResult<Vec<GuestEntry>>;
+
+    fn handle(&mut self, msg: GetGuestBook, _: &mut Self::Context) -> Self::Result {
+        let items = guest_entries
+            .filter(public.eq(1))
+            .limit(msg.num_entries)
+            .order(created_at.desc())
             .load::<models::GuestEntry>(&self.0)?;
 
-        Ok(items.pop().unwrap())
+        Ok(items)
     }
 }
 
 /// Message that can be sent to DbExecutor to create a new guest_entry
+#[derive(Deserialize, Debug)]
 pub struct SignGuestBook {
     pub name: String,
     pub public: bool,
 }
 
 impl Message for SignGuestBook {
-    type Result = QueryResult<GuestEntry>;
+    // TODO; query result of nothing
+    type Result = QueryResult<()>;
+}
+
+pub struct GetGuestBook {
+    pub num_entries: i64,
+}
+
+impl Message for GetGuestBook {
+    type Result = QueryResult<Vec<GuestEntry>>;
+}
+
+// TODO: I guess this could be a method on a enum struct that wrapped db_addr
+pub async fn sign_guest_book(db_addr: &Addr<DbExecutor>, guest_entry: SignGuestBook) -> Result<()> {
+    // Double layer of Result. First "try" the MessageError Result type from the
+    // send, then try the QueryResult it returns
+    db_addr.send(guest_entry).await??;
+    Ok(())
+}
+
+pub async fn get_guest_book(db_addr: &Addr<DbExecutor>) -> Result<Vec<GuestEntry>> {
+    // Isn't it beautiful?
+    Ok(db_addr.send(GetGuestBook { num_entries: 7 }).await??)
 }
 
 /// All application state lives here. It get's passed to App.data in the App

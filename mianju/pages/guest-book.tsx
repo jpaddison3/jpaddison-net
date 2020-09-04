@@ -2,12 +2,7 @@ import React, { useState } from 'react'
 import Layout from 'components/Layout'
 import {
   Typography, TableContainer, Table, TableBody, TableRow, TableCell, Paper, makeStyles, FormControl,
-  Input,
-  FormHelperText,
-  InputLabel,
-  Button,
-  FormGroup,
-  Theme
+  Input, InputLabel, Button, FormGroup, Theme
 } from '@material-ui/core'
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -64,17 +59,26 @@ const SignatureForm = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('final name', name)
+    console.log('signing with name', name)
     // TODO;
     // 'https://api.jpaddison.net/guest-book/new'
-    await fetch("http://localhost:8088/guest-book/new", {
+    const result = await fetch("http://localhost:8088/guest-book/new", {
       method: 'post',
       headers: {
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({name: name})
+      body: JSON.stringify({name: name, public: true})
     })
+    if (!result.ok) {
+      console.error("Failed to sign guest book, got error code:", result.status)
+      const errMsg = await result.text()
+      if (errMsg.length) {
+        console.error("Error message:", errMsg)
+      } else {
+        console.error("No further error information given")
+      }
+    }
   }
 
   // TODO; command enter
@@ -110,11 +114,12 @@ export const GuestBook = ({ guest_entries }: GuestBookProps) => {
 // TODO; optimistic response
 export async function getServerSideProps(): Promise<{ props: GuestBookProps }> {
   // TODO;, obviously
-  const res = await fetch("https://xkcd.com/info.0.json")
+  const res = await fetch("http://localhost:8088/guest-book")
+  console.log("res", res)
   const data = await res.json()
 
   // Pass data to the page via props
-  return { props: { guest_entries: [{ name: data.title }, { name: "Randal Munroe" }] } }
+  return { props: { guest_entries: data } }
 }
 
 export default GuestBook

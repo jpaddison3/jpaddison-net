@@ -8,7 +8,7 @@ ziwo/target
 
 # dev state
 .env
-ziwo/*.db
+ziwo/localdbs
 
 # NextJS
 mianju/node_modules
