@@ -31,7 +31,10 @@ pub enum ConfigError {
 impl EnvConfig {
     // Get environment variables, with help from dotenv
     pub fn new() -> Result<EnvConfig> {
-        dotenv::dotenv()?;
+        match dotenv::dotenv() {
+            Ok(_) => (),
+            Err(err) => println!("Not using .env file: {}", err),
+        };
 
         let instance_env = match &env::var("ENV")?[..] {
             "production" => InstanceEnv::Production,
