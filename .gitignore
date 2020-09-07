@@ -7,7 +7,7 @@ ziwo/target
 .vscode
 
 # dev state
-.env
+.env*
 ziwo/localdbs
 
 # NextJS

@@ -5,6 +5,12 @@ import {
   Input, InputLabel, Button, FormGroup, Theme
 } from '@material-ui/core'
 import { Alert } from '@material-ui/lab';
+import { ENV } from 'lib/utils';
+
+const apiUrl: string = {
+  dev: "localhost:8088",
+  production: "jpaddison.net/api"
+}[ENV]
 
 const useStyles = makeStyles<Theme>(theme => ({
   tableRoot: {
@@ -80,7 +86,8 @@ const SignatureForm = ({ addName }: { addName: (name: string) => void }) => {
     updateName("")
     // TODO;
     // 'https://api.jpaddison.net/guest-book/new'
-    const result = await fetch("http://localhost:8088/guest-book/new", {
+    const fetchProtocol = ENV === "dev" ? "http" : "https"
+    const result = await fetch(`${fetchProtocol}://${apiUrl}/guest-book/new`, {
       method: 'post',
       headers: {
         'Accept': 'application/json, text/plain, */*',
@@ -152,7 +159,7 @@ export async function getServerSideProps(): Promise<{ props: GuestBookProps }> {
   let err: ErrorSubset | null = null
   try {
     // TODO;, obviously
-    const res = await fetch("http://localhost:8088/guest-book")
+    const res = await fetch(`http://${apiUrl}/guest-book`)
     guestEntries = await res.json()
   } catch (e) {
     console.error(e)
