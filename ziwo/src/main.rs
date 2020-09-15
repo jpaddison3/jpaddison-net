@@ -15,7 +15,7 @@ async fn index(_: web::Data<AppState>) -> impl Responder {
         .body("This is an api service. Perhapse you meant the endpoint at /guest-book?")
 }
 
-#[get("/guest-book")]
+#[get("/api/guest-book")]
 async fn guest_book(data: web::Data<AppState>) -> impl Responder {
     match get_guest_book(&data.db_addr).await {
         Ok(guest_entries) => HttpResponse::Ok().json(guest_entries),
@@ -26,7 +26,7 @@ async fn guest_book(data: web::Data<AppState>) -> impl Responder {
     }
 }
 
-#[post("/guest-book/new")]
+#[post("/api/guest-book/new")]
 async fn guest_book_new(
     (sign_req, app_data): (web::Json<SignGuestBook>, web::Data<AppState>),
 ) -> impl Responder {
@@ -90,7 +90,7 @@ async fn main() -> std::io::Result<()> {
             server.bind("127.0.0.1:8088")?
         };
     } else {
-        server = server.bind("0.0.0.0:80")?
+        server = server.bind("0.0.0.0:8080")?
     }
 
     println!("Starting http server:");

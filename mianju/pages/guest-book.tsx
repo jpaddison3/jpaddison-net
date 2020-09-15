@@ -8,7 +8,7 @@ import { Alert } from '@material-ui/lab';
 import { ENV } from 'lib/utils';
 
 const apiUrl: string = {
-  dev: "localhost:8088",
+  dev: "localhost:8088/api",
   production: "jpaddison.net/api"
 }[ENV]
 
@@ -84,8 +84,6 @@ const SignatureForm = ({ addName }: { addName: (name: string) => void }) => {
     e.preventDefault()
     console.log('signing with name', name)
     updateName("")
-    // TODO;
-    // 'https://api.jpaddison.net/guest-book/new'
     const fetchProtocol = ENV === "dev" ? "http" : "https"
     const result = await fetch(`${fetchProtocol}://${apiUrl}/guest-book/new`, {
       method: 'post',

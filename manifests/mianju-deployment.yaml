@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mianju-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mianju-deployment-app
+  template:
+    metadata:
+      labels:
+        app: mianju-deployment-app
+    spec:
+      containers:
+      - name: mianju-deployment-container
+        image: gcr.io/jpaddison-net/mianju:latest
+        ports:
+        - containerPort: 3000
+        env:
+          - name: PORT
+            value: "3000"

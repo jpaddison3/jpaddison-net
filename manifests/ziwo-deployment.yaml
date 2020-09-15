@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ziwo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ziwo-deployment-app
+  template:
+    metadata:
+      labels:
+        app: ziwo-deployment-app
+    spec:
+      containers:
+      - name: ziwo-deployment-container
+        image: gcr.io/jpaddison-net/ziwo:latest
+        ports:
+        - containerPort: 8080
+        env:
+          - name: PORT
+            value: "8080"
+          - name: ENV
+            value: production
+          - name: DATABASE_URL
+            value: prod.db

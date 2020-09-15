@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: jpaddison-net-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: jpaddison-net-ip
+    networking.gke.io/managed-certificates: jpaddison-net-cert
+spec:
+  backend:
+    serviceName: mianju-service
+    servicePort: 80
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: mianju-service
+          servicePort: 80
+      - path: /api/*
+        backend:
+          serviceName: ziwo-service
+          servicePort: 80

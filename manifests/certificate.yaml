@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1beta2
+kind: ManagedCertificate
+metadata:
+  name: jpaddison-net-cert
+spec:
+  domains:
+    - jpaddison.net
+    - www.jpaddison.net
