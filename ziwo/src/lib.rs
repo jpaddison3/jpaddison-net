@@ -118,7 +118,6 @@ pub struct SignGuestBook {
 }
 
 impl Message for SignGuestBook {
-    // TODO; query result of nothing
     type Result = QueryResult<()>;
 }
 

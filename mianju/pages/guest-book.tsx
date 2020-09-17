@@ -105,8 +105,6 @@ const SignatureForm = ({ addName }: { addName: (name: string) => void }) => {
     addName(name)
   }
 
-  // TODO; command enter
-  // TODO; private
   return <form onSubmit={onSubmit}>
     <FormControl classes={{ root: classes.formRoot }}>
       <FormGroup row>
@@ -156,7 +154,6 @@ export async function getServerSideProps(): Promise<{ props: GuestBookProps }> {
   let guestEntries: GuestEntry[] | null = null
   let err: ErrorSubset | null = null
   try {
-    // TODO;, obviously
     const res = await fetch(`http://${apiUrl}/guest-book`)
     guestEntries = await res.json()
   } catch (e) {
