@@ -34,7 +34,7 @@ const NavDrawer = ({ routes, open, onClose, onOpen }: NavDrawerProps) => {
 
   return <SwipeableDrawer open={open} onClose={onClose} onOpen={onOpen}>
     <List className={classes.drawerRoot}>
-      {routes.map(({ id, href, label }) => <ListItem button key={id}>
+      {routes.map(({ id, href, label }) => <ListItem key={id}>
         <ListItemText primaryTypographyProps={{variant: 'body2'}}>
           <WrappedLink className={classes.navItem} href={href}>{label}</WrappedLink>
         </ListItemText>

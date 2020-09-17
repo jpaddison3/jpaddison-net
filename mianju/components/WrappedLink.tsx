@@ -1,35 +1,25 @@
-/*
- * Make MUI and Next links play nicely with each other
+// https://gist.github.com/herr-vogel/0b5d4f3c28f08dc6cc4a2fd4f7b4a4df#gistcomment-3051542
+import React from 'react'
+import MUILink, { LinkProps as MUILinkProps } from '@material-ui/core/Link'
+import NextLink, { LinkProps as NextLinkProps } from 'next/link'
+
+/**
+ * We need to Omit from the MUI Button the {href} prop
+ * as we have to handle routing with Next.js Router
+ * so we block the possibility to specify an href.
  */
-import React, { ReactNode, Ref } from 'react'
-import Link, { LinkProps } from '@material-ui/core/Link'
-import RouterLink from 'next/link'
 
-// Props `href` and `children` should never be null, but the type signiture of
-// MUI allows them to be, and we should follow their lead here if we want to
-// pass WrappedLink into Mui's Link
-type WrappedLinkProps = {
-    className?: string,
-    href?: string,
-    as?: string,
-    children?: ReactNode,
-    prefetch?: boolean,
-}
+export type LinkProps = Omit<MUILinkProps, 'href' | 'classes'> &
+  Pick<NextLinkProps, 'href' | 'as' | 'prefetch'>
 
-// TODO; warning
-const WrappedLink = React.forwardRef(({ className, href, as, children, prefetch }: WrappedLinkProps, ref) => {
-    if (!href) {
-        throw new Error("Wrapped link must receive href")
-    }
-    return <RouterLink href={href} as={as} prefetch={prefetch} ref={ref}>
-        <a className={className}>
-            {children}
-        </a>
-    </RouterLink>
-})
+const Link = React.forwardRef<LinkProps, any>(
+  ({ href, as, prefetch, ...props }, ref) => (
+    <NextLink href={href} as={as} prefetch={prefetch} passHref>
+      <MUILink ref={ref} {...props} />
+    </NextLink>
+  )
+)
 
-const _Link = React.forwardRef((props: LinkProps, ref: Ref<HTMLAnchorElement>) => {
-    return <Link component={WrappedLink} ref={ref} {...props} />
-})
+Link.displayName = 'Link'
 
-export default _Link
+export default Link
