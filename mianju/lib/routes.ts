@@ -12,11 +12,11 @@ export const routes: NavRoutes = [
     href: '/',
     label: 'Home'
   },
-  {
-    id: 'guest-book',
-    href: '/guest-book',
-    label: 'Guest Book'
-  }
+  // {
+  //   id: 'guest-book',
+  //   href: '/guest-book',
+  //   label: 'Guest Book'
+  // }
 ]
 
 export default routes
