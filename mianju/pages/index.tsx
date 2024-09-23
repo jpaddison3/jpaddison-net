@@ -17,13 +17,13 @@ export default function Home() {
       <Grid item md={6}>
         <Typography variant='h2' component='h1' color='primary'>JP Addison</Typography>
 
-        <Typography gutterBottom>is a developer and <a href="https://www.effectivealtruism.org/articles/introduction-to-effective-altruism/">effective altruist</a>.</Typography>
+        <Typography gutterBottom>is a technologist and <a href="https://www.effectivealtruism.org/articles/introduction-to-effective-altruism/">effective altruist</a>.</Typography>
 
-        <Typography gutterBottom>I am the lead developer for the <a href="https://forum.effectivealtruism.org/">Effective Altruism Forum</a>. I contribute code to <a href="https://www.lesswrong.com/">LessWrong</a>, whose codebase I forked to make the Forum.</Typography>
+        <Typography gutterBottom>I am the head of the Online Team at the <a href="https://www.centreforeffectivealtruism.org/">Centre for Effective Altruism</a>. I help run the <a href="https://forum.effectivealtruism.org/">Effective Altruism Forum</a>.</Typography>
 
         <Typography gutterBottom>You can find me elsewhere at <a href="https://github.com/jpaddison3">github</a> or <a href="https://www.linkedin.com/in/jpaddison3/">linkedin</a>.</Typography>
 
-        <Typography gutterBottom>You can get in touch with me socially via <a href="https://www.facebook.com/jpaddison1.6">facebook</a> or <a href="mailto:johnpaddison@gmail.com">email</a>, or professionally via my <a href="mailto:jp@centreforeffectivealtruism.org">work email</a>.</Typography>
+        <Typography gutterBottom>You can get in touch with me socially via <a href="mailto:johnpaddison@gmail.com">email</a>, or professionally via my <a href="mailto:jp@centreforeffectivealtruism.org">work email</a>.</Typography>
       </Grid>
       <Grid item md={5}>
         <img src="https://res.cloudinary.com/jpaddison/image/upload/v1600099735/jp-profile.jpg" alt="profile image" className={classes.profileImage}/>
