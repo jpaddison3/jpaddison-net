@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography'
 import Nav from 'components/Nav'
 import routes from 'lib/routes'
 
-export const Layout: React.FC = ({ children }) => {
+export const Layout: React.FC<{children: any}> = ({ children }) => {
   return <>
     <Head>
       <title>JP Addison's personal site</title>

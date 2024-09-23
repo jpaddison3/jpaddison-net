@@ -17,7 +17,7 @@ export default function Home() {
       <Grid item md={6}>
         <Typography variant='h2' component='h1' color='primary'>JP Addison</Typography>
 
-        <Typography gutterBottom>is a developer and <a href="https://www.effectivealtruism.org/articles/introduction-to-effective-altruism/">effective altruist</a>.</Typography>
+        <Typography gutterBottom>is a technologist and <a href="https://www.effectivealtruism.org/articles/introduction-to-effective-altruism/">effective altruist</a>.</Typography>
 
         <Typography gutterBottom>I am the head of the Online Team at the <a href="https://www.centreforeffectivealtruism.org/">Centre for Effective Altruism</a>. I help run the <a href="https://forum.effectivealtruism.org/">Effective Altruism Forum</a>.</Typography>
 
