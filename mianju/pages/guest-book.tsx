@@ -156,7 +156,7 @@ export async function getServerSideProps(): Promise<{ props: GuestBookProps }> {
   try {
     const res = await fetch(`http://${apiUrl}/guest-book`)
     guestEntries = await res.json()
-  } catch (e) {
+  } catch (e: any) {
     console.error(e)
     err = { errno: e.errno, code: e.code, message: e.message }
   }
