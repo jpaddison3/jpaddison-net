@@ -19,7 +19,7 @@ export default function Home() {
 
         <Typography gutterBottom>is a developer and <a href="https://www.effectivealtruism.org/articles/introduction-to-effective-altruism/">effective altruist</a>.</Typography>
 
-        <Typography gutterBottom>I am the head of the Online Team at the <a href="https://www.centreforeffectivealtruism.org/">Centre for Effective Altruism</a>. I help run the <a href="https://forum.effectivealtruism.org/">Effective Altruism Forum</a>.
+        <Typography gutterBottom>I am the head of the Online Team at the <a href="https://www.centreforeffectivealtruism.org/">Centre for Effective Altruism</a>. I help run the <a href="https://forum.effectivealtruism.org/">Effective Altruism Forum</a>.</Typography>
 
         <Typography gutterBottom>You can find me elsewhere at <a href="https://github.com/jpaddison3">github</a> or <a href="https://www.linkedin.com/in/jpaddison3/">linkedin</a>.</Typography>
 
