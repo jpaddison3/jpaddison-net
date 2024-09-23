@@ -15,6 +15,7 @@ export type LinkProps = Omit<MUILinkProps, 'href' | 'classes'> &
 const Link = React.forwardRef<LinkProps, any>(
   ({ href, as, prefetch, ...props }, ref) => (
     <NextLink href={href} as={as} prefetch={prefetch} passHref>
+      {/* @ts-ignore */}
       <MUILink ref={ref} {...props} />
     </NextLink>
   )
